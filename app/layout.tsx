@@ -2,6 +2,9 @@ import type { Metadata } from "next"
 import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
+import { ChatAyuda } from "@/components/chat/chat-ayuda"
+import { EncabezadoSitio } from "@/components/encabezado-sitio"
+import { FondoDecorativo } from "@/components/fondo-decorativo"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -13,8 +16,9 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Presupuestos web",
-  description: "Calcula el presupuesto de un proyecto web.",
+  title: "Presupuesta mi web · Asistente de presupuestos",
+  description:
+    "Explica tu proyecto, recibe una propuesta de servicios con IA, revísala y descarga el presupuesto en PDF.",
 }
 
 export default function RootLayout({
@@ -34,7 +38,12 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <FondoDecorativo />
+          <EncabezadoSitio />
+          {children}
+          <ChatAyuda />
+        </ThemeProvider>
       </body>
     </html>
   )

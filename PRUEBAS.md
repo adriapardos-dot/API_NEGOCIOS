@@ -47,3 +47,32 @@ Invoke-RestMethod http://localhost:3000/api/presupuesto -Method Post `
   -ContentType "application/json" `
   -Body '{"tipo":"corporativa","paginas":4,"formulario":true,"segundoIdioma":false}'
 ```
+
+---
+
+# Pruebas del asistente con IA y del PDF
+
+Ejecutadas con `npm run pruebas:ia` contra la build de producción (`npm run build && npm start`) y el modelo `gpt-5.4-mini`. Todos los datos son ficticios. Las respuestas de la IA pueden variar en la redacción entre ejecuciones; lo que se comprueba es la estructura y los servicios.
+
+| # | Situación | Entrada | Esperado | Obtenido |
+|---|---|---|---|---|
+| 1 | Solicitud clara | Restaurante: carta, galería, contacto, formulario de reservas, castellano e inglés (4 páginas) | `corporativa`, `formulario`, `segundoIdioma`; 4 páginas | ✅ `[corporativa, formulario, segundoIdioma]`, `paginas: 4`, sin dudas |
+| 2 | Solicitud ambigua | «Quiero algo para internet para mi negocio, que quede bonito y moderno.» | Dudas para aclarar; páginas sin inventar | ✅ `paginas: null`, 2 dudas (tipo de negocio y secciones) |
+| 3 | Servicio no ofrecido | Tienda online con pago con tarjeta, blog y SEO | Va a `fueraDeCatalogo`; solo ids del catálogo | ✅ `fueraDeCatalogo`: tienda online, pagos con tarjeta, blog, SEO |
+| 4a | Descripción vacía | `"descripcion": "   "` | 400, sin llamar a OpenAI | ✅ 400 · «La descripción del proyecto no puede estar vacía.» |
+| 4b | Descripción demasiado larga | 2001 caracteres | 400 | ✅ 400 · «La descripción no puede superar los 2000 caracteres (tiene 2001).» |
+| 5 | Fallo de OpenAI (simulado) | cabecera `x-simular-fallo-ia: 1` | Error y opción de reintentar | ✅ 502 · `"reintentable": true` |
+| 5b | Fallo de OpenAI (real) | servidor con `OPENAI_API_KEY` inválida | Error controlado, sin datos técnicos | ✅ 502 · «El asistente no está disponible (credenciales no válidas en el servidor). Puedes volver a intentarlo.» |
+| 6a | Propuesta original | corporativa + formulario + segundo idioma, 4 páginas | 600 + 150 + 80 + 150 = **980 €** | ✅ 980 € |
+| 6b | Modificación antes del PDF | se quita el segundo idioma, 5 páginas y se envía `"total": 1, "precio": 0` | 600 + 200 + 80 = **880 €** (ignora los importes enviados) | ✅ 880 € |
+| 6c | PDF con la selección modificada | misma selección que 6b | PDF válido con 880 € | ✅ `application/pdf`, empieza por `%PDF` y muestra 880 € |
+| 6d | Selección no válida | id `tiendaOnline`, sin tipo de web y `paginas: null` | 400 con los tres errores | ✅ 400 |
+
+## Prueba en el navegador
+
+Flujo completo con Chrome headless:
+
+1. Se rellena el ejemplo «Restaurante» y se corta la red en `/api/propuesta`: aparece «No hemos podido preparar la propuesta» con el botón **Reintentar**.
+2. Al reintentar llega la propuesta (corporativa, formulario y segundo idioma). Las páginas aparecen como **dato necesario** y el botón «Revisar documento» está desactivado.
+3. Se indican 4 páginas y se quita el segundo idioma: el servidor recalcula **830 €** (600 + 3 × 50 + 80).
+4. La vista previa muestra el documento y «Aceptar y descargar PDF» descarga el archivo.

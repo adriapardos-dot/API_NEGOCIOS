@@ -30,6 +30,7 @@ import { GlassInput } from "@/components/ui/glasscn/glass-input"
 import { GlassRadioGroupItem } from "@/components/ui/glasscn/glass-radio-group"
 import { GlassSeparator } from "@/components/ui/glasscn/glass-separator"
 import { GlassSlider } from "@/components/ui/glasscn/glass-slider"
+import { estiloAcento } from "@/lib/estilos"
 import { glassVariantStyles } from "@/lib/glass-variants"
 import { cn } from "@/lib/utils"
 import type { Presupuesto, TARIFAS, TipoWeb } from "@/lib/presupuesto"
@@ -391,12 +392,6 @@ export function CalculadoraPresupuesto() {
 // Tarjeta de opción: cristal claro que se tiñe de índigo al marcarse.
 const estiloOpcion =
   "flex cursor-pointer gap-3 rounded-xl border border-white/50 bg-white/10 transition-colors hover:bg-white/25 has-data-checked:border-indigo-400/70 has-data-checked:bg-indigo-400/10 has-data-checked:ring-3 has-data-checked:ring-indigo-400/15 dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.07] dark:has-data-checked:border-indigo-300/40 dark:has-data-checked:bg-indigo-400/15 [&_svg]:size-4"
-
-// Radio y casilla: borde visible sin marcar, índigo al marcar.
-// Cristal de acento del botón principal y del total: reflejo suave encima de
-// un degradado violeta → índigo → cielo (los tonos del fondo) que fluye despacio.
-const estiloAcento =
-  "bg-indigo-500 text-white [background-image:linear-gradient(180deg,rgba(255,255,255,0.3)_0%,rgba(255,255,255,0.05)_55%,rgba(255,255,255,0)_100%),linear-gradient(110deg,#8b5cf6,#6366f1,#0ea5e9,#8b5cf6)] [background-size:100%_100%,300%_100%] animate-[degradado-fluir_8s_ease-in-out_infinite] motion-reduce:animate-none dark:bg-indigo-600 dark:[background-image:linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_60%),linear-gradient(110deg,#7c3aed,#4f46e5,#0284c7,#7c3aed)]"
 
 const estiloMarcador =
   "border-slate-300 bg-white/70 data-checked:border-indigo-500 data-checked:bg-indigo-500 data-checked:text-white dark:border-white/25 dark:bg-white/10 dark:data-checked:border-indigo-400 dark:data-checked:bg-indigo-400 dark:data-checked:text-slate-950"
